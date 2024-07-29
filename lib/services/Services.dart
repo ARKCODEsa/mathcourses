@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-//creamos la clase Services que extiende de StatefulWidget
 class Services extends StatefulWidget {
   const Services({super.key});
 
@@ -8,12 +7,82 @@ class Services extends StatefulWidget {
   _ServicesState createState() => _ServicesState();
 }
 
-//creamos la clase _ServicesState que extiende de State
 class _ServicesState extends State<Services> {
-  //creamos una lista de servicios del 1 al 10
-  final List<String> _services = List<String>.generate(10, (i) => 'Service ${i + 1}');
+  final List<String> _services = [
+    'Mathematics',
+    'Physics',
+    'Chemistry',
+    'Art',
+    'Music',
+    'Architecture',
+    'Design',
+    'Programming',
+    'Economics',
+    'Finance',
+    'Sciences',
+    'Astrology',
+    'Civil Engineering',
+    'Industrial Engineering',
+    'Biology',
+    'Organic Chemistry',
+    'Quantum Physics',
+    'Applied Mathematics',
+    'Statistics',
+    'Computing',
+    'Electronics',
+    'Mechanics',
+    'Aerospace',
+    'Medicine',
+    'Nursing',
+    'Psychology',
+    'Sociology',
+    'Philosophy',
+    'History',
+    'Language and Literature',
+    'Languages',
+  ];
 
-  //creamos el metodo build que se encarga de construir la interfaz
+  final List<Color> _colors = [
+    Colors.red,
+    Colors.blue,
+    Colors.green,
+    Colors.orange,
+    Colors.purple,
+    Colors.yellow,
+    Colors.cyan,
+    Colors.pink,
+    Colors.teal,
+    Colors.lime,
+    Colors.indigo,
+    Colors.amber,
+    Colors.brown,
+    Colors.grey,
+    Colors.blueGrey,
+    Colors.lightGreen,
+    Colors.deepOrange,
+    Colors.deepPurple,
+    Colors.lightBlue,
+    Colors.limeAccent,
+    Colors.orangeAccent,
+    Colors.pinkAccent,
+    Colors.purpleAccent,
+    Colors.redAccent,
+    Colors.tealAccent,
+    Colors.yellowAccent,
+    Colors.cyanAccent,
+    Colors.indigoAccent,
+    Colors.greenAccent,
+    Colors.blueAccent,
+    Colors.amberAccent,
+  ];
+
+  void _navigateToService(String service) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ServiceScreen(service: service)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,19 +96,51 @@ class _ServicesState extends State<Services> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Image.asset('lib/images/services.png'),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 10.0),
             Expanded(
               child: ListView.builder(
                 itemCount: _services.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_services[index]),
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _colors[index % _colors.length],
+                      ),
+                      onPressed: () => _navigateToService(_services[index]),
+                      child: Text(_services[index]),
+                    ),
                   );
                 },
               ),
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/contact_us');
+        },
+        tooltip: 'Contact Us',
+        child: const Text('ContactUs'),
+      ),
+    );
+  }
+}
+
+class ServiceScreen extends StatelessWidget {
+  final String service;
+
+  const ServiceScreen({super.key, required this.service});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(service),
+      ),
+      body: Center(
+        child: Text('Welcome to $service'),
       ),
     );
   }

@@ -19,7 +19,7 @@ class Conexion {
         'CREATE TABLE sign_in (id INTEGER PRIMARY KEY, name TEXT, last_name TEXT, age TEXT, city TEXT, country TEXT, phone TEXT, email TEXT, password TEXT)');
     //creamos la tabla products
     await db.execute(
-        'CREATE TABLE products (id INTEGER PRIMARY KEY, nombre TEXT,description TEXT,  precio REAL)');
+        'CREATE TABLE contact_us (id INTEGER PRIMARY KEY, name TEXT, last_name TEXT, phone TEXT, email TEXT. message TEXT)');
   }
   //creamos el metodo que nos permitira cerrar la base de datos
   Future<void> cerrar() async {
@@ -76,4 +76,19 @@ class Conexion {
     await db.insert('sign_in', data,
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
+
+  //creamos el metodo que nos permitira insertar datos en la tabla contact_us y enviarlos a este email arqjhefferson@hotmail.com
+  Future<void> contactUs(String name, String lastName, String phone, String email,String message) async {
+    final Database db = await abrir();
+    final Map<String, dynamic> data = {
+      'name': name,
+      'last_name': lastName,
+      'phone': phone,
+      'email': email,
+      'message': message,
+    };
+    await db.insert('contact_us', data,
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
 }
