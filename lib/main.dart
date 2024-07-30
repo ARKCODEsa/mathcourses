@@ -1,6 +1,3 @@
-//importaciones necesarias
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:mathcourses/contact_us/Contact_us.dart';
 import 'package:mathcourses/services/courses/Aerospace.dart';
@@ -15,6 +12,8 @@ import 'package:mathcourses/services/courses/Art.dart';
 import 'package:mathcourses/services/courses/Astrology.dart';
 import 'package:mathcourses/services/courses/Biology.dart';
 import 'package:mathcourses/services/courses/Chemistry.dart';
+import 'package:mathcourses/api_service.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -40,7 +39,6 @@ class MyApp extends StatelessWidget {
         '/courses/Astrology': (context) => const Astrology(),
         '/courses/Biology': (context) => const Biology(),
         '/courses/Chemistry': (context) => const Chemistry(),
-
       },
     );
   }

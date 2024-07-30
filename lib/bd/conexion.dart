@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:mathcourses/api_service.dart';
 
 class Conexion {
+  final ApiService apiService = ApiService('https://your-api-url.com/');
+
   Future<Database> abrir() async {
     String ruta = join(await getDatabasesPath(), 'bd_tareas.db');
     return openDatabase(ruta, version: 1, onCreate: _crearTabla);
@@ -9,9 +14,9 @@ class Conexion {
 
   Future<void> _crearTabla(Database db, int version) async {
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS sign_in (id INTEGER PRIMARY KEY, name TEXT, last_name TEXT, age TEXT, city TEXT, country TEXT, phone TEXT, email TEXT, password TEXT)');
+        'CREATE TABLE sign_in (id INTEGER PRIMARY KEY, name TEXT, last_name TEXT, age TEXT, city TEXT, country TEXT, phone TEXT, email TEXT, password TEXT)');
     await db.execute(
-        'CREATE TABLE IF NOT EXISTS contact_us (id INTEGER PRIMARY KEY, name TEXT, last_name TEXT, phone TEXT, email TEXT, message TEXT)');
+        'CREATE TABLE contact_us (id INTEGER PRIMARY KEY, name TEXT, last_name TEXT, phone TEXT, email TEXT, message TEXT)');
   }
 
   Future<void> cerrar() async {
@@ -20,35 +25,29 @@ class Conexion {
   }
 
   Future<void> insert(String tabla, Map<String, dynamic> data) async {
-    final Database db = await abrir();
-    await db.insert(tabla, data, conflictAlgorithm: ConflictAlgorithm.replace);
+    await apiService.post('/$tabla', data);
   }
 
   Future<List<Map<String, dynamic>>> read(String tabla) async {
-    final Database db = await abrir();
-    return db.query(tabla);
+    final response = await apiService.get('/$tabla');
+    return List<Map<String, dynamic>>.from(jsonDecode(response.body));
   }
 
   Future<void> update(String tabla, Map<String, dynamic> data) async {
-    final Database db = await abrir();
-    await db.update(tabla, data, where: 'id = ?', whereArgs: [data['id']]);
+    await apiService.put('/$tabla/${data['id']}', data);
   }
 
   Future<void> delete(String tabla, int id) async {
-    final Database db = await abrir();
-    await db.delete(tabla, where: 'id = ?', whereArgs: [id]);
+    await apiService.delete('/$tabla/$id');
   }
 
   Future<bool> login(String email, String password) async {
-    final Database db = await abrir();
-    final List<Map<String, dynamic>> maps = await db.query('sign_in',
-        where: 'email = ? and password = ?', whereArgs: [email, password]);
-    return maps.isNotEmpty;
+    final response = await apiService.post('/login', {'email': email, 'password': password});
+    return jsonDecode(response.body)['success'];
   }
 
   Future<void> register(String name, String lastName, String age, String city, String country, String phone, String email, String password) async {
-    final Database db = await abrir();
-    final Map<String, dynamic> data = {
+    final data = {
       'name': name,
       'last_name': lastName,
       'age': age,
@@ -58,18 +57,17 @@ class Conexion {
       'email': email,
       'password': password,
     };
-    await db.insert('sign_in', data, conflictAlgorithm: ConflictAlgorithm.replace);
+    await apiService.post('/sign_in', data);
   }
 
   Future<void> contactUs(String name, String lastName, String phone, String email, String message) async {
-    final Database db = await abrir();
-    final Map<String, dynamic> data = {
+    final data = {
       'name': name,
       'last_name': lastName,
       'phone': phone,
       'email': email,
       'message': message,
     };
-    await db.insert('contact_us', data, conflictAlgorithm: ConflictAlgorithm.replace);
+    await apiService.post('/contact_us', data);
   }
 }
