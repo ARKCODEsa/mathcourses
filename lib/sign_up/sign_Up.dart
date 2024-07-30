@@ -74,6 +74,7 @@ class _SignUpState extends State<SignUp> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+        //creamos un SingleChildScrollView que nos permitira hacer scroll en caso de que la pantalla sea muy pequeña
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

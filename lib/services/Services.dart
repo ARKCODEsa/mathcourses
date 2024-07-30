@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mathcourses/services/courses/Aerospace.dart';
+import 'package:mathcourses/services/courses/Applied_Mathematics.dart';
+import 'package:mathcourses/services/courses/Architecture.dart';
+// Import other service files
 
 class Services extends StatefulWidget {
   const Services({super.key});
@@ -77,10 +81,23 @@ class _ServicesState extends State<Services> {
   ];
 
   void _navigateToService(String service) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ServiceScreen(service: service)),
-    );
+    switch (service) {
+      case 'Aerospace':
+        Navigator.pushNamed(context, '/courses/Aerospace');
+        break;
+      case 'Applied Mathematics':
+        Navigator.pushNamed(context, '/courses/Applied_Mathematics');
+        break;
+      case 'Architecture':
+        Navigator.pushNamed(context, '/courses/Architecture');
+        break;
+    // Add cases for other services
+      default:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ServiceScreen(service: service)),
+        );
+    }
   }
 
   @override

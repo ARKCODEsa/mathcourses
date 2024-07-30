@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mathcourses/bd/conexion.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 
@@ -10,55 +11,54 @@ class ContactUs extends StatefulWidget {
 }
 
 class _ContactUsState extends State<ContactUs> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _messageController = TextEditingController();
-  final Conexion _conexion = Conexion();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _messageController = TextEditingController();
 
-  Future<void> _sendContactUs() async {
-    final String name = _nameController.text;
-    final String lastName = _lastNameController.text;
-    final String phone = _phoneController.text;
-    final String email = _emailController.text;
-    final String message = _messageController.text;
+  Future<void> _sendEmail() async {
+    if (_formKey.currentState!.validate()) {
+      final name = _nameController.text;
+      final lastName = _lastNameController.text;
+      final phone = _phoneController.text;
+      final email = _emailController.text;
+      final message = _messageController.text;
 
-    if (name.isEmpty || lastName.isEmpty || phone.isEmpty || email.isEmpty || message.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All fields are required')),
+      final Email emailToSend = Email(
+        body: 'Name: $name\nLast Name: $lastName\nPhone: $phone\nEmail: $email\nMessage: $message',
+        subject: 'Contact Us Form Submission',
+        recipients: ['arqjhefferson@hotmail.com'],
+        isHTML: false,
       );
-      return;
+
+      try {
+        await FlutterEmailSender.send(emailToSend);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Message sent successfully')),
+        );
+        _nameController.clear();
+        _lastNameController.clear();
+        _phoneController.clear();
+        _emailController.clear();
+        _messageController.clear();
+      } on PlatformException catch (e) {
+        if (e.code == 'not_available') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No email client found. Please install an email client to send emails.')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('An error occurred while sending the email.')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('An error occurred while sending the email.')),
+        );
+      }
     }
-
-    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-    if (!emailRegex.hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid email format')),
-      );
-      return;
-    }
-
-    await _conexion.contactUs(name, lastName, phone, email, message);
-
-    final Email emailToSend = Email(
-      body: 'Name: $name\nLast Name: $lastName\nPhone: $phone\nEmail: $email\nMessage: $message',
-      subject: 'Contact Us Form Submission',
-      recipients: ['arqjhefferson@hotmail.com'],
-      isHTML: false,
-    );
-
-    await FlutterEmailSender.send(emailToSend);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Message sent successfully')),
-    );
-
-    _nameController.clear();
-    _lastNameController.clear();
-    _phoneController.clear();
-    _emailController.clear();
-    _messageController.clear();
   }
 
   @override
@@ -69,49 +69,87 @@ class _ContactUsState extends State<ContactUs> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Image.asset('lib/images/contact_us.png'),
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Image.asset('lib/images/contact_us.png'),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              TextField(
-                controller: _lastNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Last Name',
+                TextFormField(
+                  controller: _lastNameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Last Name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your last name';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              TextField(
-                controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Phone',
+                TextFormField(
+                  controller: _phoneController,
+                  decoration: const InputDecoration(
+                    labelText: 'Phone',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your phone number';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+                TextFormField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty || !value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
                 ),
-              ),
-              TextField(
-                controller: _messageController,
-                decoration: const InputDecoration(
-                  labelText: 'Message',
+                TextFormField(
+                  controller: _messageController,
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    labelText: 'Message',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a message';
+                    }
+                    return null;
+                  },
                 ),
-                maxLines: 5,
-              ),
-              const SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: _sendContactUs,
-                child: const Text('Send'),
-              ),
-            ],
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _sendEmail,
+                  child: const Text('Send'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

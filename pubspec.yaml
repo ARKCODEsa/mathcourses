@@ -69,6 +69,7 @@ flutter:
     - lib/images/sign_in.png
     - lib/images/sign_up.png
     - lib/images/services.png
+    - lib/images/contact_us.png
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
