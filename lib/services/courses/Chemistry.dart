@@ -10,8 +10,9 @@ class Chemistry extends StatelessWidget {
         title: const Text('Chemistry'),
       ),
       body: const Center(
-        child: Text('Welcome to Chemistry'),
+        child: Text('Welcome to Chemistry')
       ),
+
     );
   }
 }
